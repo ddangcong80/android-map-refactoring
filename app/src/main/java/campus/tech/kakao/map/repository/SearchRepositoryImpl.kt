@@ -5,12 +5,8 @@ import campus.tech.kakao.map.model.KakaoLocalService
 import campus.tech.kakao.map.model.PlaceInfo
 import campus.tech.kakao.map.model.SavePlace
 import campus.tech.kakao.map.model.SavePlaceDao
-import campus.tech.kakao.map.model.SearchPlace
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -48,19 +44,18 @@ class SearchRepositoryImpl @Inject constructor(
         return showSavePlace()
     }
 
-    override fun getPlaceList(categoryGroupName: String, callback: (List<PlaceInfo>?) -> Unit) {
-        retrofit.getPlaceList(apiKey, categoryGroupName)
-            .enqueue(object : Callback<SearchPlace> {
-                override fun onResponse(
-                    call: Call<SearchPlace>,
-                    response: Response<SearchPlace>
-                ) {
-                    callback(response.body()?.documents)
+    override suspend fun getPlaceList(categoryGroupName: String): List<PlaceInfo>? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val response = retrofit.getPlaceList(apiKey, categoryGroupName).execute()
+                if (response.isSuccessful) {
+                    response.body()?.documents
+                } else {
+                    null
                 }
-
-                override fun onFailure(call: Call<SearchPlace>, t: Throwable) {
-                    callback(null)
-                }
-            })
+            } catch (e: Exception) {
+                null
+            }
+        }
     }
 }

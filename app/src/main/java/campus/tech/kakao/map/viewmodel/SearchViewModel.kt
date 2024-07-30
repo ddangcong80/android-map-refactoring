@@ -44,7 +44,8 @@ class SearchViewModel @Inject constructor(
     }
 
     fun getPlaceList(categoryGroupName: String) {
-        searchRepo.getPlaceList(categoryGroupName) { places ->
+        viewModelScope.launch {
+            val places = searchRepo.getPlaceList(categoryGroupName)
             _places.postValue(places)
         }
     }

@@ -7,5 +7,5 @@ interface SearchRepository {
     suspend fun savePlaces(placeName: String): List<SavePlace>
     suspend fun showSavePlace(): List<SavePlace>
     suspend fun deleteSavedPlace(savedPlaceName: String): List<SavePlace>
-    fun getPlaceList(categoryGroupName: String, callback: (List<PlaceInfo>?) -> Unit)
+    suspend fun getPlaceList(categoryGroupName: String): List<PlaceInfo>?
 }
